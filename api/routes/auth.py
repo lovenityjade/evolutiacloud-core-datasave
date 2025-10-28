@@ -1,7 +1,7 @@
 # auth.py - Authentication handling (login, JWT token)
 from fastapi import APIRouter, HTTPException
 import jwt
-from api.config import config
+import config
 
 # Create FastAPI router for auth
 router = APIRouter()

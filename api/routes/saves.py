@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from api.utils.db import get_db
 import os, hashlib, datetime
-from api.config import config
+import config
 
 router = APIRouter()
 
