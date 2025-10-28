@@ -1,27 +1,44 @@
 # auth.py - Authentication handling (login, JWT token)
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 import jwt
-import config
+import config  # Assure-toi que config.py est correct et accessible
+
+# Pydantic models
+class UserRegister(BaseModel):
+    username: str
+    email: str
+    password: str
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
 
 # Create FastAPI router for auth
 router = APIRouter()
 
 # Prototype login endpoint
 @router.post("/login")
-def login(username: str, password: str):
+async def login(user: UserLogin):
     """
     Prototype login: checks a temporary username/password
     Returns a JWT token if credentials are correct
     """
     # For now, only admin is hardcoded
-    if username == "CHANGE" and password == "CHANGE":
+    if user.username == "CHANGE" and user.password == "CHANGE":
         # Create a simple JWT token
         token = jwt.encode(
-            {"user": username},
-            config["api"]["jwt_secret"],
+            {"user": user.username},
+            config.api["jwt_secret"],
             algorithm="HS256"
         )
         return {"token": token}
     
     # Return error if credentials are invalid
     raise HTTPException(status_code=401, detail="Invalid credentials")
+
+# Prototype register endpoint
+@router.post("/register")
+async def register_user(user: UserRegister):
+    # For now, just a dummy response
+    return {"message": f"User {user.username} registered successfully"}
