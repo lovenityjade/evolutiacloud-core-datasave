@@ -1,6 +1,6 @@
-# db.py - Database connection helper
+# api/utils/db.py - Database connection helper
 import pymysql
-import config
+from config import config
 
 def get_db():
     """
@@ -11,7 +11,7 @@ def get_db():
         user=config["database"]["user"],
         password=config["database"]["password"],
         database=config["database"]["name"],
-        cursorclass=pymysql.cursors.DictCursor,  # Return results as dict
+        cursorclass=pymysql.cursors.DictCursor,  # results as dict
         autocommit=True
     )
     return conn

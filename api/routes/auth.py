@@ -1,11 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import jwt
-from api.utils.db import get_db
-from api.models.user import User
-from api.utils import security
 import config
+from api.models.user import get_user_by_username, create_user
+from api.utils.hashing import verify_password
 
 router = APIRouter()
 
@@ -18,40 +16,25 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
-# ---------------- Register ----------------
+# Register endpoint
 @router.post("/register")
-def register_user(user: UserRegister, db: Session = Depends(get_db)):
-    # Vérifier si l'utilisateur existe déjà
-    if db.query(User).filter(User.username == user.username).first():
-        raise HTTPException(status_code=409, detail="Username already taken")
-    if db.query(User).filter(User.email == user.email).first():
-        raise HTTPException(status_code=409, detail="Email already registered")
-    
-    # Hacher le mot de passe
-    hashed_pw = security.hash_password(user.password)
-    
-    # Créer l'utilisateur
-    db_user = User(username=user.username, email=user.email, hashed_password=hashed_pw)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    
-    return {"message": f"User {user.username} registered successfully"}
+def register_user(user: UserRegister):
+    existing_user = get_user_by_username(user.username)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    created = create_user(user.username, user.email, user.password)
+    return {"message": f"User {created['username']} registered successfully"}
 
-# ---------------- Login ----------------
+# Login endpoint
 @router.post("/login")
-def login(user: UserLogin, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.username == user.username).first()
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    if not security.verify_password(user.password, db_user.hashed_password):
+def login(user: UserLogin):
+    db_user = get_user_by_username(user.username)
+    if not db_user or not verify_password(user.password, db_user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # Générer JWT
     token = jwt.encode(
-        {"user": db_user.username},
-        config.JWT_SECRET,
+        {"user": user.username},
+        config["api"]["jwt_secret"],
         algorithm="HS256"
     )
     return {"token": token}
