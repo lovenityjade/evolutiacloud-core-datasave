@@ -1,15 +1,27 @@
-from fastapi import APIRouter, HTTPException, Depends
-from api.utils.db import get_db
+# auth.py - Authentication handling (login, JWT token)
+from fastapi import APIRouter, HTTPException
 import jwt
 from api.config import config
 
+# Create FastAPI router for auth
 router = APIRouter()
 
-# Temporary prototype login route
+# Prototype login endpoint
 @router.post("/login")
 def login(username: str, password: str):
-    # TODO: Replace with proper password check
+    """
+    Prototype login: checks a temporary username/password
+    Returns a JWT token if credentials are correct
+    """
+    # For now, only admin is hardcoded
     if username == "CHANGE" and password == "CHANGE":
-        token = jwt.encode({"user": username}, config["api"]["jwt_secret"], algorithm="HS256")
+        # Create a simple JWT token
+        token = jwt.encode(
+            {"user": username},
+            config["api"]["jwt_secret"],
+            algorithm="HS256"
+        )
         return {"token": token}
+    
+    # Return error if credentials are invalid
     raise HTTPException(status_code=401, detail="Invalid credentials")
