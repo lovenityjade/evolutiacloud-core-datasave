@@ -1,0 +1,22 @@
+{
+  "database": {
+    "host": "localhost",
+    "user": "CHANGE_THIS",
+    "password": "CHANGE_THIS",
+    "name": "evolutiacloud-core"
+  },
+  "storage": {
+    "base_path": "/etc/evolutiacloud/saves/",
+    "default_storage_mb": 50,
+    "global_storage_max_mb": 10240
+  },
+  "api": {
+    "jwt_secret": "CHANGE_THIS_SECRET",
+    "port": 8080,
+    "debug": true
+  },
+  "logging": {
+    "log_file": "/var/log/evolutiacloud/cloudsave.log",
+    "verbose_console": true
+  }
+}
