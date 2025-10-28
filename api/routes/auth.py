@@ -9,7 +9,7 @@ router = APIRouter()
 @router.post("/login")
 def login(username: str, password: str):
     # TODO: Replace with proper password check
-    if username == "admin" and password == "A3e5t122!":
+    if username == "CHANGE" and password == "CHANGE":
         token = jwt.encode({"user": username}, config["api"]["jwt_secret"], algorithm="HS256")
         return {"token": token}
     raise HTTPException(status_code=401, detail="Invalid credentials")
