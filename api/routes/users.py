@@ -1,6 +1,6 @@
 # users.py - User management
 from fastapi import APIRouter
-import get_db
+from api.utils.db import get_db
 
 router = APIRouter()
 
