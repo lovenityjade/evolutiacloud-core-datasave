@@ -1,10 +1,22 @@
-# auth.py - Authentication handling (login, JWT token)
+# api/routes/auth.py
+"""
+Authentication handling for EvolutiaCloud DataSave
+Endpoints:
+- /auth/register : register a new user (prototype)
+- /auth/login    : login and receive JWT token (prototype)
+"""
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import jwt
-import config  # Assure-toi que config.py est correct et accessible
 
-# Pydantic models
+# Import your config dictionary from api/config.py
+from api.config import config
+
+# FastAPI router
+router = APIRouter()
+
+# ---------- Pydantic models ----------
 class UserRegister(BaseModel):
     username: str
     email: str
@@ -14,31 +26,29 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
-# Create FastAPI router for auth
-router = APIRouter()
+# ---------- Endpoints ----------
+@router.post("/register")
+async def register_user(user: UserRegister):
+    """
+    Prototype user registration.
+    Currently just returns a success message.
+    """
+    return {"message": f"User {user.username} registered successfully"}
 
-# Prototype login endpoint
 @router.post("/login")
 async def login(user: UserLogin):
     """
-    Prototype login: checks a temporary username/password
-    Returns a JWT token if credentials are correct
+    Prototype login:
+    Checks a hardcoded username/password and returns a JWT token.
     """
-    # For now, only admin is hardcoded
+    # Hardcoded admin credentials for prototype
     if user.username == "CHANGE" and user.password == "CHANGE":
-        # Create a simple JWT token
         token = jwt.encode(
             {"user": user.username},
-            config.api["jwt_secret"],
+            config["api"]["jwt_secret"],
             algorithm="HS256"
         )
         return {"token": token}
-    
-    # Return error if credentials are invalid
-    raise HTTPException(status_code=401, detail="Invalid credentials")
 
-# Prototype register endpoint
-@router.post("/register")
-async def register_user(user: UserRegister):
-    # For now, just a dummy response
-    return {"message": f"User {user.username} registered successfully"}
+    # Invalid credentials
+    raise HTTPException(status_code=401, detail="Invalid credentials")

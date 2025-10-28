@@ -1,20 +1,21 @@
-# main.py - Entry point of the FastAPI server
+# api/main.py
+"""
+Main entrypoint for EvolutiaCloud DataSave API
+Starts FastAPI app and includes all routers
+"""
+
 from fastapi import FastAPI
-from api.routes import auth, saves, users
+from api.routes import auth  # include auth routes
 
-# Create the FastAPI app
-app = FastAPI(
-    title="EvolutiaCloud DataSave Core API",
-    version="0.01.0",
-    description="Alpha 0.01.0 Prototype - Cloud Save synchronization server"
-)
+app = FastAPI(title="EvolutiaCloud DataSave API")
 
-# Include all routers (endpoints)
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(saves.router, prefix="/saves", tags=["saves"])
-app.include_router(users.router, prefix="/users", tags=["users"])
+# Include auth router with /auth prefix
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 
-# Root route to verify the server is running
+# ---------- Root endpoint ----------
 @app.get("/")
-def root():
+async def root():
+    """
+    Basic health check
+    """
     return {"message": "EvolutiaCloud DataSave API running successfully"}
