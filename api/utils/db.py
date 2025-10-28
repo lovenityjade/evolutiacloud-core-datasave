@@ -1,6 +1,6 @@
 # db.py - Database connection helper
 import pymysql
-from api.config import config
+import config
 
 def get_db():
     """
